@@ -158,9 +158,10 @@ Nun erhöhen wir die Komplexität und betrachten die Temperaturverteilung beim B
 
 Die Wärmestromdichte im Abstand $r$ von der Drehachse für die Zeit $t$ kann nach {cite}`comsol_multiphysics_43a_heat_nodate` dabei wie folge berechnet werden:
 
-$$
+```{math}
+:label: waermestromdichte_scheibenbremse
 \dot{q}(r, t)=-\frac{m R^2 \alpha}{8 r_{\mathrm{m}} A} r\left(\omega_0+\alpha t\right)
-$$
+```
 
 ```{list-table}
 * - $\alpha$
