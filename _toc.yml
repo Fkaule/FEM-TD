@@ -1,0 +1,41 @@
+format: jb-book
+root: Readme
+defaults:  # The defaults key will be applied to all chapters and sub-sections
+  titlesonly: False
+
+parts:
+parts:
+  - caption: Finite-Elemente Methode
+    numbered: True  # Only applies to chapters in Part 1.
+    chapters:
+    - file: 00_FEM/00_FEM
+
+  - caption: Einführung ANSYS
+    numbered: True  # Only applies to chapters in Part 1.
+    chapters:
+    - file: 01_Praktikum/00_Uebersicht
+    - file: 01_Praktikum/01_Beispiel_a
+      sections:
+      - file: 01_Praktikum/02_Materialdefinition
+      - file: 01_Praktikum/03_Geometrieerstellung
+      - file: 01_Praktikum/04_Materialzuweisung
+      - file: 01_Praktikum/05_Navigation
+      - file: 01_Praktikum/06_Selektion
+      - file: 01_Praktikum/07_Vernetzung
+      - file: 01_Praktikum/08_Randbedingungen
+      - file: 01_Praktikum/09_Loesung
+      - file: 01_Praktikum/10_Loesungsdarstellung
+      - file: 01_Praktikum/11_Ergebnisse_Diskussion
+    - file: 01_Praktikum/12_Beispiel_b
+      sections:
+      - file: 01_Praktikum/13_Randbedingungen_b
+      - file: 01_Praktikum/14_Ergebnisse_Diskussion_b
+    - file: 01_Praktikum/15_Beispiel_c
+      sections:
+      - file: 01_Praktikum/16_Randbedingungen_c
+      - file: 01_Praktikum/17_Ergebnisse_Diskussion_c  
+    - file: 01_Praktikum/18_Zusammenfassung
+
+
+
+

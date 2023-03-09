@@ -1,0 +1,27 @@
+# Book settings
+# Learn more at https://jupyterbook.org/customize/config.html
+
+title                       : Angewandte FEM in der Thermodynamik
+author                      : Felix Kaule / Stephan Schoenfelder
+logo                        : ""
+exclude_patterns            : [_build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints"]
+only_build_toc_files        : True
+
+#######################################################################################
+# Execution settings
+execute:
+    execute_notebooks       : off
+
+#######################################################################################
+# Parse and render settings
+parse:
+
+parse:
+  myst_enable_extensions:
+    # don't forget to list any other extensions you want enabled,
+    # including those that are enabled by default! See here: https://jupyterbook.org/en/stable/customize/config.html
+    - html_image
+    - amsmath
+    - dollarmath
+  myst_dmath_double_inline: true  # Allow display math ($$) within an inline context
+
