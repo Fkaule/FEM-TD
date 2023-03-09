@@ -2,13 +2,11 @@
 
 ## Anwendungsfälle
 
-- Temperaturfeldberechnung in Festkörpern für den **stationären** und **instationären Fall**
+Mit Hilfe der Finite-Elemente Methode (FEM) können wir Temperaturfeldberechnung in Festkörpern für den **stationären** und **instationären Fall** berechnen. Schauen wir uns dafür zunächst ein einfaches Beispiel analytisch an und vergleichen es mit einer FEM Simulation
 
-## Was wird benötigt ?
+## Beispiel 1: Wärmeleitung durch eine Wand
 
-1. Materialparameter
-2. Geometrie
-3. Randbedingungen
+Mit der folgenden analytischen Gleichung können wir die Wärmeleitung in einer Wand berechnen:
 
 ```{list-table}
 * - $\dot{q}$
@@ -123,3 +121,68 @@ T_E=\frac{{\Delta L}}{\lambda}\,\dot q+T_A
     </script>
   </body>
 </html>
+<br>
+
+### Umsetzung in FEM
+
+**Um dies in der FEM zu lösen brauchen wir folgenden Informationen:**
+
+1. Materialparameter:
+
+- $\lambda$ (Wärmeleitfähigkeit)
+
+2. Geometrie:
+
+- $\Delta L$ (Dicke der Wand)
+
+3. Randbedingungen:
+
+- $\dot{q}$ (Wärmestromdichte)
+- $T_A$ (Temperatur auf der Innenseite)
+
+**Was können wir nun mit der FEM bestimmen:**
+
+- Temperaturverlauf innerhalb der Wand und damit auch die Temperatur auf der Aussenseite ($T_E$)
+
+.. Bild FEM
+
+### Veränderung der Wandgeometrie
+
+In der FEM können wir nun die Geometrie der Wand mit einem weiteren Material ergänzen und somit deutlich komplizierte Fälle relativ schnell berechnen:
+
+.. Bild FEM
+
+## Beispiel 2: Scheibenbremse
+
+Nun erhöhen wir die Komplexität und betrachten die Temperaturverteilung beim Bremsvorgang mit einer Scheibenbremse beim Fahrrad.
+
+Die Wärmestromdichte im Abstand $r$ von der Drehachse für die Zeit $t$ kann nach {cite}`comsol_multiphysics_43a_heat_nodate` dabei wie folge berechnet werden:
+
+$$
+\dot{q}(r, t)=-\frac{m R^2 \alpha}{8 r_{\mathrm{m}} A} r\left(\omega_0+\alpha t\right)
+$$
+
+```{list-table}
+* - $\alpha$
+  - Winkelbeschleunigung [$\mathrm{rad/s^2}$]
+* - $\omega_0$
+  - initiale Winkelgeschwindigkeit [$\mathrm{rad/s}$]
+* - $A$
+  - Fläche des Bremsbelags  [$\mathrm{m^2}$]
+* - $m$
+  - Masse des zu bremsenden Körpers [$\mathrm{kg}$]
+* - $R$
+  - Radius des Rades [$\mathrm{m}$]
+* - $r_m$
+  - Abstand Achse Scheibenbremse bis Mitte Bremsbelag  [$\mathrm{m}$]
+* - $t$
+  - Zeit [$\mathrm{s}$]
+* - $\dot{q}$
+  - Wärmestromdichte [$\mathrm{W/m^2}$]
+```
+
+**Literaturverzeichnis**
+
+```{bibliography}
+
+```
