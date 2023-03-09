@@ -42,55 +42,84 @@ T_E=\frac{{\Delta L}}{\lambda}\,\dot q+T_A
   <div id="jxgbox" class="jxgbox" style="width:500px; height:400px;"></div>
 
   <script>
+			const board0 = JXG.JSXGraph.initBoard('jxgbox0', {
+				boundingbox: [-0.1, 1, 1, -0.1],
+				axis: false,
+				showCopyright:false,
+				showNavigation:false
+			});
+			
+			var board = JXG.JSXGraph.initBoard('jxgbox', {
+				boundingbox: [-0.1, 110, 1, -5],
+				axis:true,
+				showCopyright:false,
+				showNavigation:false,
+				defaultAxes:{
+					x: {
+						name: 'L [m]',
+						withLabel: true,
+						label: {
+							position: 'rt',
+							offset: [-15, 20]
+						}
+					},
+					y: {
+						withLabel: true,
+						name: 'T [°C]',
+						label: {
+							position: 'rt',
+							offset: [10, -10]
+						}
+					}
+				}
+			});
+			
+			board0.addChild(board);
+			
+			
+			var TA = board0.create('slider', [[0.1, 0.8], [0.6, 0.8], [0, 20, 50]], {name:'TA', snapWidth: 1, postLabel: ' °C'});
+			var deltaL = board0.create('slider', [[0.1, 0.6], [0.6, 0.6], [0.1, 0.1, 0.8]], {name:'deltaL', snapWidth: 0.02, postLabel: ' m'});
+			var lambda_max = 200
+			var lambda = board0.create('slider', [[0.1, 0.4], [0.6, 0.4], [10, 60.5, lambda_max]], {name:'lambda', snapWidth: 10, postLabel: 'W/mK'});
+			var qdot_max = 100000
+			var qdot = board0.create('slider', [[0.1, 0.2], [0.6, 0.2], [10000, 48400, qdot_max]], {name:'qdot', snapWidth: 1000, postLabel: 'W/m^2'});
 
-    const board0 = JXG.JSXGraph.initBoard('jxgbox0', {
-        boundingbox: [-0.1, 1, 1, -0.1],
-        axis: false,
-        showCopyright:false,
-        showNavigation:false
-    });
+			var p1 = board.create('point',[0,0], {name:'A', size:4, fixed:true, visible:false});
+			var p2 = board.create('point',[0,110], {name:'B', size:4, fixed:true, visible:false});
+			var p3 = board.create('point',[function(){return deltaL.Value();},110], {name:'C', size:4, fixed:true, visible:false});
+			var p4 = board.create('point',[function(){return deltaL.Value();},0], {name:'D', size:4, fixed:true, visible:false});
+			var poly = board.create('polygon',["A","B","C","D"], {
+				fillColor:"#AAAAAA" , 
+				fillOpacity: function(){return lambda.Value()/lambda_max;},
+				borders:{strokeColor:'black'}});
+			
+			var p5 = board.create('point', [0, 55], {visible:false});
+			var p6 = board.create('point', [function(){return deltaL.Value();}, 55], {visible:false});
+			var arrow1 = board.create('arrow', [p5, p6], {
+				strokeWidth:function(){return 3*qdot.Value()/qdot_max+1;}, 
+				strokeColor:'red', label:{label: 'test', autoPosition: false, offset:[10, 0], position: 'rt'}
+			},
+			);
+			arrow1.setLabel('Wärmestrom')
+			arrow1.labelColor('red')
+			
+	
+			
+			var graph = board.create('functiongraph', [function(x){return qdot.Value()*x/lambda.Value()+TA.Value();}, 0, function(){return deltaL.Value();}],   {name:'Temperaturverlauf', withLabel:false, strokeColor:'black', strokeWidth: 3});
+			
 
-    var board = JXG.JSXGraph.initBoard('jxgbox', {
-      boundingbox: [-0.1, 110, 1, -5],
-      axis:true,
-      showCopyright:false,
-      showNavigation:false,
-      defaultAxes:{
-        x: {
-          name: 'L [m]',
-          withLabel: true,
-          label: {
-            position: 'rt',
-            offset: [-15, 20]
-          }
-        },
-        y: {
-          withLabel: true,
-          name: 'T [°C]',
-          label: {
-            position: 'rt',
-            offset: [10, -10]
-          }
-        }
-      }
-    });
+			var t1 = board.create('text',[0, -1,function(){return 'T_E='+(qdot.Value()*deltaL.Value()/lambda.Value()+TA.Value()).toFixed(1)+'°C';}], {
+				anchor: p3, 
+				anchorY: 'top',
+				anchorX: 'left'});
 
-    board0.addChild(board);
-
-
-    var TA = board0.create('slider', [[0.1, 0.8], [0.6, 0.8], [0, 20, 50]], {name:'TA', snapWidth: 1, postLabel: ' °C'});
-    var deltaL = board0.create('slider', [[0.1, 0.6], [0.6, 0.6], [0.1, 0.1, 1]], {name:'deltaL', snapWidth: 0.02, postLabel: ' m'});
-    var lambda = board0.create('slider', [[0.1, 0.4], [0.6, 0.4], [10, 60.5, 200]], {name:'lambda', snapWidth: 10, postLabel: 'W/mK'});
-    var qdot = board0.create('slider', [[0.1, 0.2], [0.6, 0.2], [10000, 48400, 100000]], {name:'qdot', snapWidth: 1000, postLabel: 'W/m^2'});
-
-    var graph = board.create('functiongraph', [function(x){return qdot.Value()*x/lambda.Value()+TA.Value();}, 0, function(){return deltaL.Value();}],   {name:'T(L)', withLabel:false, strokeColor:'red'});
-
-    var reset = board0.create('button',[-0.05, 0.5,'Reset', function(){
-      TA.setValue(20),
-      deltaL.setValue(0.1),
-      lambda.setValue(60.5),
-      qdot.setValue(48400)
-    }]);
-  </script>
+			
+			var reset = board0.create('button',[-0.05, 0.5,'Reset', function(){
+				TA.setValue(20),
+				deltaL.setValue(0.1),
+				lambda.setValue(60.5),
+				qdot.setValue(48400)
+			}]);
+    </script>
   </body>
 </html>
