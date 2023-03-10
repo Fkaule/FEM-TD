@@ -2,11 +2,13 @@
 
 ## Anwendungsfälle
 
-Mit Hilfe der Finite-Elemente Methode (FEM) können wir Temperaturfeldberechnung in Festkörpern für den **stationären** und **instationären Fall** berechnen. Schauen wir uns dafür zunächst ein einfaches Beispiel analytisch an und vergleichen es mit einer FEM Simulation
+Mit Hilfe der Finite-Elemente Methode (FEM) können wir Temperaturfeldberechnung in Festkörpern mit beliebiger Geometrie für den **stationären** und **instationären Fall** berechnen. Es kann ebenfalls mit Fluiden gerechnet werden, aber das Strömungsverhalten kann dabei nicht abgebildet werden.
+
+Schauen wir uns dafür zunächst ein einfaches Beispiel analytisch an und vergleichen es mit einer FEM Simulation.
 
 ## Beispiel 1: Wärmeleitung durch eine Wand
 
-Mit der folgenden analytischen Gleichung können wir die Wärmeleitung in einer Wand berechnen:
+Mit der folgenden analytischen Gleichung können wir die Endtemperatur in einer Wand auf Grund der gegebenen Parameter berechnen:
 
 ```{list-table}
 * - $\dot{q}$
@@ -32,7 +34,8 @@ T_E=\frac{{\Delta L}}{\lambda}\,\dot q+T_A
     <meta charset="UTF-8">
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
     <link rel="stylesheet" type="text/css" href="https://jsxgraph.uni-bayreuth.de/distrib/jsxgraph.css" />
-    <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js" type="text/javascript" charset="UTF-8"></script>
+   	<script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js" type="text/javascript" charset="UTF-8"></script>
+
   </head>
   <body>
 
@@ -40,6 +43,8 @@ T_E=\frac{{\Delta L}}{\lambda}\,\dot q+T_A
   <div id="jxgbox" class="jxgbox" style="width:500px; height:400px;"></div>
 
   <script>
+            JXG.Options.text.useMathJax = true;
+
 			const board0 = JXG.JSXGraph.initBoard('jxgbox0', {
 				boundingbox: [-0.1, 1, 1, -0.1],
 				axis: false,
@@ -74,50 +79,49 @@ T_E=\frac{{\Delta L}}{\lambda}\,\dot q+T_A
 			
 			board0.addChild(board);
 			
-			
-			var TA = board0.create('slider', [[0.1, 0.8], [0.6, 0.8], [0, 20, 50]], {name:'TA', snapWidth: 1, postLabel: ' °C'});
-			var deltaL = board0.create('slider', [[0.1, 0.6], [0.6, 0.6], [0.1, 0.1, 0.8]], {name:'deltaL', snapWidth: 0.02, postLabel: ' m'});
-			var lambda_max = 200
-			var lambda = board0.create('slider', [[0.1, 0.4], [0.6, 0.4], [10, 60.5, lambda_max]], {name:'lambda', snapWidth: 10, postLabel: 'W/mK'});
-			var qdot_max = 100000
-			var qdot = board0.create('slider', [[0.1, 0.2], [0.6, 0.2], [10000, 48400, qdot_max]], {name:'qdot', snapWidth: 1000, postLabel: 'W/m^2'});
+            var TA_ref = 20
+            var deltaL_ref = 0.4
+			var lambda_ref = 0.7
+			var lambda_max = 4.0
+            var qdot_ref = 300
+            var qdot_max = 600
+            
+			var TA = board0.create('slider', [[0.1, 0.8], [0.6, 0.8], [0, TA_ref, 50]], {name:' \\( T_A \\)', snapWidth: 5, digits:0, unitLabel: '\\( \\mathrm °C \\)'});
+			var deltaL = board0.create('slider', [[0.1, 0.6], [0.6, 0.6], [0.3, deltaL_ref, 0.8]], {name:' \\( \\Delta L \\)', snapWidth: 0.1, unitLabel: '\\( \\mathrm m \\)'});
+			var lambda = board0.create('slider', [[0.1, 0.4], [0.6, 0.4], [0.1, lambda_ref, lambda_max]], {name:'\\( \\lambda \\)', snapWidth: 0.1, digits:1, unitLabel: '\\( \\mathrm W/mK \\)'});
+			var qdot_max = 600
+			var qdot = board0.create('slider', [[0.1, 0.2], [0.6, 0.2], [qdot_max/10, qdot_ref, qdot_max]], {name:'\\( \\dot q \\)', snapWidth: 100, digits:0, unitLabel: '\\( \\mathrm W/m^2 \\)'});
 
 			var p1 = board.create('point',[0,0], {name:'A', size:4, fixed:true, visible:false});
 			var p2 = board.create('point',[0,110], {name:'B', size:4, fixed:true, visible:false});
 			var p3 = board.create('point',[function(){return deltaL.Value();},110], {name:'C', size:4, fixed:true, visible:false});
 			var p4 = board.create('point',[function(){return deltaL.Value();},0], {name:'D', size:4, fixed:true, visible:false});
-			var poly = board.create('polygon',["A","B","C","D"], {
-				fillColor:"#AAAAAA" , 
-				fillOpacity: function(){return lambda.Value()/lambda_max;},
-				borders:{strokeColor:'black'}});
-			
+			var poly = board.create('polygon',["A","B","C","D"], {fillColor:"#AAAAAA", fillOpacity: 0.8, borders:{strokeColor:'black'}});
 			var p5 = board.create('point', [0, 55], {visible:false});
 			var p6 = board.create('point', [function(){return deltaL.Value();}, 55], {visible:false});
-			var arrow1 = board.create('arrow', [p5, p6], {
-				strokeWidth:function(){return 3*qdot.Value()/qdot_max+1;}, 
-				strokeColor:'red', label:{label: 'test', autoPosition: false, offset:[10, 0], position: 'rt'}
-			},
-			);
-			arrow1.setLabel('Wärmestrom')
-			arrow1.labelColor('red')
-			
-	
-			
-			var graph = board.create('functiongraph', [function(x){return qdot.Value()*x/lambda.Value()+TA.Value();}, 0, function(){return deltaL.Value();}],   {name:'Temperaturverlauf', withLabel:false, strokeColor:'black', strokeWidth: 3});
-			
+			var arrow1 = board.create('arrow', [p5, p6], {strokeWidth:function(){return 3*qdot.Value()/qdot_max+1;}, strokeColor:'red', label:{label: 'test', autoPosition: false, offset:[10, 0], position: 'rt'}},);
 
-			var t1 = board.create('text',[0, -1,function(){return 'T_E='+(qdot.Value()*deltaL.Value()/lambda.Value()+TA.Value()).toFixed(1)+'°C';}], {
+			var graph = board.create('functiongraph', [function(x){return qdot.Value()*x/lambda.Value()+TA.Value();}, 0, function(){return deltaL.Value();}],   {name:'Temperaturverlauf', withLabel:false, strokeColor:'black', strokeWidth: 3});
+
+            var text_qdot = board.create('text',[function(){return deltaL.Value();},58,
+                function(){return '\\( \\dot q \\) ='+qdot.Value().toFixed(0)+'\\( \\mathrm W/m^2 \\)';}], {anchorY: 'center', anchorX: 'left', color:'red'});
+
+            var text_lambda = board.create('text',[0.05,10,
+                function(){return '\\( \\lambda \\) ='+lambda.Value().toFixed(1)+'\\( \\mathrm W/mK \\)';}], {anchorY: 'center', anchorX: 'left', color:'black'});
+			
+			var t_TE = board.create('text',[0, -1,function(){return '\\( T_E \\) ='+(qdot.Value()*deltaL.Value()/lambda.Value()+TA.Value()).toFixed(1)+'\\( \\mathrm °C \\)';}], {
 				anchor: p3, 
 				anchorY: 'top',
 				anchorX: 'left'});
 
-			
 			var reset = board0.create('button',[-0.05, 0.5,'Reset', function(){
-				TA.setValue(20),
-				deltaL.setValue(0.1),
-				lambda.setValue(60.5),
-				qdot.setValue(48400)
+				TA.setValue(TA_ref),
+				deltaL.setValue(deltaL_ref),
+				lambda.setValue(lambda_ref),
+				qdot.setValue(qdot_ref)
 			}]);
+
+
     </script>
   </body>
 </html>
@@ -125,17 +129,12 @@ T_E=\frac{{\Delta L}}{\lambda}\,\dot q+T_A
 
 ### Umsetzung in FEM
 
-**Um dies in der FEM zu lösen brauchen wir folgenden Informationen:**
+Um dies in der FEM zu lösen brauchen wir folgenden Informationen:
 
-1. Materialparameter:
+- zum **Material** $\lambda$ (Wärmeleitfähigkeit)
+- zur **Geometrie** $\Delta L$ (Dicke der Wand).
 
-- $\lambda$ (Wärmeleitfähigkeit)
-
-2. Geometrie:
-
-- $\Delta L$ (Dicke der Wand)
-
-3. Randbedingungen:
+Bei den **Randbedingungen** starten wir zunächst mit den gleichen die wir auch in der analytischen Formel gegeben hatten:
 
 - $\dot{q}$ (Wärmestromdichte)
 - $T_A$ (Temperatur auf der Innenseite)
@@ -185,5 +184,5 @@ Die Wärmestromdichte im Abstand $r$ von der Drehachse für die Zeit $t$ kann na
 **Literaturverzeichnis**
 
 ```{bibliography}
-
+:style: unsrt
 ```

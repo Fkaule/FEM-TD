@@ -43,7 +43,7 @@ $$
 Durch Umstellung der Gleichung {eq}`waermestromdichte` kann nach dem linearen Zusammenhang die Temperatur an jedem Punkt zwischen den beiden Stirnseiten ermittelt werden:
 
 ```{math}
-:label: endtemperatur
+:label: endtemperatur_diskussion
 T_E=\frac{{\Delta L}}{\lambda}\,\dot q+T_A
 ```
 

@@ -60,8 +60,7 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '00_FEM/00_FEM';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -346,15 +345,16 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="finite-elemente-methode">
+  <section id="finite-elemente-methode">
 <h1><span class="section-number">1. </span>Finite-Elemente Methode<a class="headerlink" href="#finite-elemente-methode" title="Permalink to this headline">#</a></h1>
 <section id="anwendungsfalle">
 <h2><span class="section-number">1.1. </span>Anwendungsfälle<a class="headerlink" href="#anwendungsfalle" title="Permalink to this headline">#</a></h2>
-<p>Mit Hilfe der Finite-Elemente Methode (FEM) können wir Temperaturfeldberechnung in Festkörpern für den <strong>stationären</strong> und <strong>instationären Fall</strong> berechnen. Schauen wir uns dafür zunächst ein einfaches Beispiel analytisch an und vergleichen es mit einer FEM Simulation</p>
+<p>Mit Hilfe der Finite-Elemente Methode (FEM) können wir Temperaturfeldberechnung in Festkörpern mit beliebiger Geometrie für den <strong>stationären</strong> und <strong>instationären Fall</strong> berechnen. Es kann ebenfalls mit Fluiden gerechnet werden, aber das Strömungsverhalten kann dabei nicht abgebildet werden.</p>
+<p>Schauen wir uns dafür zunächst ein einfaches Beispiel analytisch an und vergleichen es mit einer FEM Simulation.</p>
 </section>
 <section id="beispiel-1-warmeleitung-durch-eine-wand">
 <h2><span class="section-number">1.2. </span>Beispiel 1: Wärmeleitung durch eine Wand<a class="headerlink" href="#beispiel-1-warmeleitung-durch-eine-wand" title="Permalink to this headline">#</a></h2>
-<p>Mit der folgenden analytischen Gleichung können wir die Wärmeleitung in einer Wand berechnen:</p>
+<p>Mit der folgenden analytischen Gleichung können wir die Endtemperatur in einer Wand auf Grund der gegebenen Parameter berechnen:</p>
 <table class="table">
 <colgroup>
 <col style="width: 50%" />
@@ -386,12 +386,14 @@ document.write(`
     <meta charset="UTF-8">
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
     <link rel="stylesheet" type="text/css" href="https://jsxgraph.uni-bayreuth.de/distrib/jsxgraph.css" />
-    <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js" type="text/javascript" charset="UTF-8"></script>
+   	<script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js" type="text/javascript" charset="UTF-8"></script>
   </head>
   <body>
   <div id="jxgbox0" class="jxgbox" style="width:500px; height:100px;"></div>
   <div id="jxgbox" class="jxgbox" style="width:500px; height:400px;"></div>
   <script>
+            JXG.Options.text.useMathJax = true;
+
 			const board0 = JXG.JSXGraph.initBoard('jxgbox0', {
 				boundingbox: [-0.1, 1, 1, -0.1],
 				axis: false,
@@ -426,72 +428,61 @@ document.write(`
 			
 			board0.addChild(board);
 			
-			
-			var TA = board0.create('slider', [[0.1, 0.8], [0.6, 0.8], [0, 20, 50]], {name:'TA', snapWidth: 1, postLabel: ' °C'});
-			var deltaL = board0.create('slider', [[0.1, 0.6], [0.6, 0.6], [0.1, 0.1, 0.8]], {name:'deltaL', snapWidth: 0.02, postLabel: ' m'});
-			var lambda_max = 200
-			var lambda = board0.create('slider', [[0.1, 0.4], [0.6, 0.4], [10, 60.5, lambda_max]], {name:'lambda', snapWidth: 10, postLabel: 'W/mK'});
-			var qdot_max = 100000
-			var qdot = board0.create('slider', [[0.1, 0.2], [0.6, 0.2], [10000, 48400, qdot_max]], {name:'qdot', snapWidth: 1000, postLabel: 'W/m^2'});
+            var TA_ref = 20
+            var deltaL_ref = 0.4
+			var lambda_ref = 0.7
+			var lambda_max = 4.0
+            var qdot_ref = 300
+            var qdot_max = 600
+            
+			var TA = board0.create('slider', [[0.1, 0.8], [0.6, 0.8], [0, TA_ref, 50]], {name:' \\( T_A \\)', snapWidth: 5, digits:0, unitLabel: '\\( \\mathrm °C \\)'});
+			var deltaL = board0.create('slider', [[0.1, 0.6], [0.6, 0.6], [0.3, deltaL_ref, 0.8]], {name:' \\( \\Delta L \\)', snapWidth: 0.1, unitLabel: '\\( \\mathrm m \\)'});
+			var lambda = board0.create('slider', [[0.1, 0.4], [0.6, 0.4], [0.1, lambda_ref, lambda_max]], {name:'\\( \\lambda \\)', snapWidth: 0.1, digits:1, unitLabel: '\\( \\mathrm W/mK \\)'});
+			var qdot_max = 600
+			var qdot = board0.create('slider', [[0.1, 0.2], [0.6, 0.2], [qdot_max/10, qdot_ref, qdot_max]], {name:'\\( \\dot q \\)', snapWidth: 100, digits:0, unitLabel: '\\( \\mathrm W/m^2 \\)'});
 
 			var p1 = board.create('point',[0,0], {name:'A', size:4, fixed:true, visible:false});
 			var p2 = board.create('point',[0,110], {name:'B', size:4, fixed:true, visible:false});
 			var p3 = board.create('point',[function(){return deltaL.Value();},110], {name:'C', size:4, fixed:true, visible:false});
 			var p4 = board.create('point',[function(){return deltaL.Value();},0], {name:'D', size:4, fixed:true, visible:false});
-			var poly = board.create('polygon',["A","B","C","D"], {
-				fillColor:"#AAAAAA" , 
-				fillOpacity: function(){return lambda.Value()/lambda_max;},
-				borders:{strokeColor:'black'}});
-			
+			var poly = board.create('polygon',["A","B","C","D"], {fillColor:"#AAAAAA", fillOpacity: 0.8, borders:{strokeColor:'black'}});
 			var p5 = board.create('point', [0, 55], {visible:false});
 			var p6 = board.create('point', [function(){return deltaL.Value();}, 55], {visible:false});
-			var arrow1 = board.create('arrow', [p5, p6], {
-				strokeWidth:function(){return 3*qdot.Value()/qdot_max+1;}, 
-				strokeColor:'red', label:{label: 'test', autoPosition: false, offset:[10, 0], position: 'rt'}
-			},
-			);
-			arrow1.setLabel('Wärmestrom')
-			arrow1.labelColor('red')
-			
-	
-			
-			var graph = board.create('functiongraph', [function(x){return qdot.Value()*x/lambda.Value()+TA.Value();}, 0, function(){return deltaL.Value();}],   {name:'Temperaturverlauf', withLabel:false, strokeColor:'black', strokeWidth: 3});
-			
+			var arrow1 = board.create('arrow', [p5, p6], {strokeWidth:function(){return 3*qdot.Value()/qdot_max+1;}, strokeColor:'red', label:{label: 'test', autoPosition: false, offset:[10, 0], position: 'rt'}},);
 
-			var t1 = board.create('text',[0, -1,function(){return 'T_E='+(qdot.Value()*deltaL.Value()/lambda.Value()+TA.Value()).toFixed(1)+'°C';}], {
+			var graph = board.create('functiongraph', [function(x){return qdot.Value()*x/lambda.Value()+TA.Value();}, 0, function(){return deltaL.Value();}],   {name:'Temperaturverlauf', withLabel:false, strokeColor:'black', strokeWidth: 3});
+
+            var text_qdot = board.create('text',[function(){return deltaL.Value();},58,
+                function(){return '\\( \\dot q \\) ='+qdot.Value().toFixed(0)+'\\( \\mathrm W/m^2 \\)';}], {anchorY: 'center', anchorX: 'left', color:'red'});
+
+            var text_lambda = board.create('text',[0.05,10,
+                function(){return '\\( \\lambda \\) ='+lambda.Value().toFixed(1)+'\\( \\mathrm W/mK \\)';}], {anchorY: 'center', anchorX: 'left', color:'black'});
+			
+			var t_TE = board.create('text',[0, -1,function(){return '\\( T_E \\) ='+(qdot.Value()*deltaL.Value()/lambda.Value()+TA.Value()).toFixed(1)+'\\( \\mathrm °C \\)';}], {
 				anchor: p3, 
 				anchorY: 'top',
 				anchorX: 'left'});
 
-			
 			var reset = board0.create('button',[-0.05, 0.5,'Reset', function(){
-				TA.setValue(20),
-				deltaL.setValue(0.1),
-				lambda.setValue(60.5),
-				qdot.setValue(48400)
+				TA.setValue(TA_ref),
+				deltaL.setValue(deltaL_ref),
+				lambda.setValue(lambda_ref),
+				qdot.setValue(qdot_ref)
 			}]);
+
+
     </script>
   </body>
 </html>
 <br>
 <section id="umsetzung-in-fem">
 <h3><span class="section-number">1.2.1. </span>Umsetzung in FEM<a class="headerlink" href="#umsetzung-in-fem" title="Permalink to this headline">#</a></h3>
-<p><strong>Um dies in der FEM zu lösen brauchen wir folgenden Informationen:</strong></p>
-<ol class="arabic simple">
-<li><p>Materialparameter:</p></li>
-</ol>
+<p>Um dies in der FEM zu lösen brauchen wir folgenden Informationen:</p>
 <ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(\lambda\)</span> (Wärmeleitfähigkeit)</p></li>
+<li><p>zum <strong>Material</strong> <span class="math notranslate nohighlight">\(\lambda\)</span> (Wärmeleitfähigkeit)</p></li>
+<li><p>zur <strong>Geometrie</strong> <span class="math notranslate nohighlight">\(\Delta L\)</span> (Dicke der Wand).</p></li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p>Geometrie:</p></li>
-</ol>
-<ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(\Delta L\)</span> (Dicke der Wand)</p></li>
-</ul>
-<ol class="arabic simple" start="3">
-<li><p>Randbedingungen:</p></li>
-</ol>
+<p>Bei den <strong>Randbedingungen</strong> starten wir zunächst mit den gleichen die wir auch in der analytischen Formel gegeben hatten:</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(\dot{q}\)</span> (Wärmestromdichte)</p></li>
 <li><p><span class="math notranslate nohighlight">\(T_A\)</span> (Temperatur auf der Innenseite)</p></li>
@@ -511,7 +502,7 @@ document.write(`
 <section id="beispiel-2-scheibenbremse">
 <h2><span class="section-number">1.3. </span>Beispiel 2: Scheibenbremse<a class="headerlink" href="#beispiel-2-scheibenbremse" title="Permalink to this headline">#</a></h2>
 <p>Nun erhöhen wir die Komplexität und betrachten die Temperaturverteilung beim Bremsvorgang mit einer Scheibenbremse beim Fahrrad.</p>
-<p>Die Wärmestromdichte im Abstand <span class="math notranslate nohighlight">\(r\)</span> von der Drehachse für die Zeit <span class="math notranslate nohighlight">\(t\)</span> kann nach <span id="id1">[<a class="reference internal" href="#id3" title="COMSOL Multiphysics 4.3a. Heat Generation in a Disc Brake. URL: https://cdn.comsol.com/wordpress/2013/02/Step-by-step-guide-for-modeling-heat-generation-in-a-disc-brake.pdf.">4.3a, n.d.</a>]</span> dabei wie folge berechnet werden:</p>
+<p>Die Wärmestromdichte im Abstand <span class="math notranslate nohighlight">\(r\)</span> von der Drehachse für die Zeit <span class="math notranslate nohighlight">\(t\)</span> kann nach <span id="id1">[<a class="reference internal" href="#id3" title="COMSOL Multiphysics 4.3a. Heat Generation in a Disc Brake. URL: https://cdn.comsol.com/wordpress/2013/02/Step-by-step-guide-for-modeling-heat-generation-in-a-disc-brake.pdf.">1</a>]</span> dabei wie folge berechnet werden:</p>
 <div class="math notranslate nohighlight" id="equation-waermestromdichte-scheibenbremse">
 <span class="eqno">(1.2)<a class="headerlink" href="#equation-waermestromdichte-scheibenbremse" title="Permalink to this equation">#</a></span>\[\dot{q}(r, t)=-\frac{m R^2 \alpha}{8 r_{\mathrm{m}} A} r\left(\omega_0+\alpha t\right)\]</div>
 <table class="table">
@@ -549,7 +540,7 @@ document.write(`
 <p><strong>Literaturverzeichnis</strong></p>
 <div class="docutils container" id="id2">
 <dl class="citation">
-<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id1">43a</a></span></dt>
+<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>COMSOL Multiphysics 4.3a. Heat Generation in a Disc Brake. URL: <a class="reference external" href="https://cdn.comsol.com/wordpress/2013/02/Step-by-step-guide-for-modeling-heat-generation-in-a-disc-brake.pdf">https://cdn.comsol.com/wordpress/2013/02/Step-by-step-guide-for-modeling-heat-generation-in-a-disc-brake.pdf</a>.</p>
 </dd>
 </dl>
